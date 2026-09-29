@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QUICK NET - Singapore Paid VPN & Data Bypass Services</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        darkBg: '#090d16',
+                        cardBg: '#111827',
+                        neonCyan: '#06b6d4',
+                        neonEmerald: '#10b981',
+                        neonPurple: '#8b5cf6',
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #090d16;
+            color: #f3f4f6;
+            overflow-x: hidden;
+            cursor: default;
+        }
+        @media (min-width: 768px) {
+            body { cursor: none; }
+        }
+        /* Custom Glowing Mouse Cursor */
+        .custom-cursor {
+            pointer-events: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 36px;
+            height: 36px;
+            border: 2px solid #06b6d4;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.2s, height 0.2s, background-color 0.2s;
+            z-index: 9999;
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.6);
+        }
+        .cursor-dot {
+            pointer-events: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 8px;
+            height: 8px;
+            background-color: #10b981;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10000;
+            box-shadow: 0 0 10px #10b981;
+        }
+        .glow-cyan {
+            box-shadow: 0 0 25px rgba(6, 182, 212, 0.4);
+        }
+        .glow-cyan-lg {
+            box-shadow: 0 0 50px rgba(6, 182, 212, 0.25);
+        }
+        .glow-emerald {
+            box-shadow: 0 0 25px rgba(16, 185, 129, 0.4);
+        }
+        .text-glow {
+            text-shadow: 0 0 10px rgba(6, 182, 212, 0.6), 0 0 20px rgba(6, 182, 212, 0.3);
+        }
+        .bg-grid-pattern {
+            background-image: radial-gradient(rgba(6, 182, 212, 0.15) 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        .floating-anim {
+            animation: float 4s ease-in-out infinite;
+        }
+        /* Loading Screen styles */
+        #loader-screen {
+            position: fixed;
+            inset: 0;
+            background: #090d16;
+            z-index: 100000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.6s ease, visibility 0.6s ease;
+        }
+        .loader-spinner {
+            width: 80px;
+            height: 80px;
+            border: 4px solid rgba(6, 182, 212, 0.1);
+            border-top: 4px solid #06b6d4;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            box-shadow: 0 0 25px rgba(6, 182, 212, 0.5);
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-darkBg text-slate-100 selection:bg-cyan-500 selection:text-white relative bg-grid-pattern">
+
+    <div class="custom-cursor hidden md:block" id="cursor"></div>
+    <div class="cursor-dot hidden md:block" id="cursorDot"></div>
+
+    <div id="loader-screen">
+        <div class="w-20 h-20 rounded-2xl bg-gradient-to-tr from-cyan-500 to-emerald-400 flex items-center justify-center glow-cyan mb-6 animate-pulse">
+            <i class="fa-solid fa-bolt text-darkBg text-3xl font-bold"></i>
+        </div>
+        <div class="loader-spinner mb-6"></div>
+        <div class="text-2xl sm:text-3xl font-black tracking-widest bg-gradient-to-r from-cyan-400 to-emerald-400 bg-clip-text text-transparent text-glow mb-3">LOADING...</div>
+        <div class="w-64 bg-slate-800 h-2 rounded-full overflow-hidden border border-slate-700">
+            <div id="loader-bar" class="bg-gradient-to-r from-cyan-500 to-emerald-400 h-full w-0 transition-all duration-100"></div>
+        </div>
+        <div id="loader-percent" class="text-xs text-slate-400 mt-2 font-mono">0%</div>
+    </div>
+
+    <header class="sticky top-0 z-50 backdrop-blur-md bg-darkBg/80 border-b border-slate-800 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-emerald-400 flex items-center justify-center glow-cyan">
+                    <i class="fa-solid fa-bolt text-darkBg text-xl font-bold"></i>
+                </div>
+                <span class="text-2xl font-black tracking-wider bg-gradient-to-r from-cyan-400 to-emerald-400 bg-clip-text text-transparent">QUICK NET</span>
+            </div>
+            
+            <nav class="hidden md:flex items-center space-x-8 text-sm font-medium">
+                <a href="#packages" class="text-slate-300 hover:text-cyan-400 transition-colors">Packages</a>
+                <a href="#bypass" class="text-slate-300 hover:text-cyan-400 transition-colors">Speed Bypass</a>
+                <a href="#explainer" class="text-slate-300 hover:text-cyan-400 transition-colors">Free Internet Guide</a>
+                <a href="#payment" class="text-slate-300 hover:text-cyan-400 transition-colors">Payment Methods</a>
+                <a href="#configs" class="text-slate-300 hover:text-cyan-400 transition-colors">Free Configs</a>
+            </nav>
+
+            <div class="flex items-center space-x-4">
+                <a href="https://wa.me/94779063644?text=Hi%20Quick%20Net,%20I%20want%20to%20purchase%20a%20VPN%20package!" target="_blank" class="hidden sm:inline-flex items-center space-x-2 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold px-4 py-2 rounded-xl transition-all glow-emerald">
+                    <i class="fa-brands fa-whatsapp text-lg"></i>
+                    <span>WhatsApp Order</span>
+                </a>
+                <button id="mobileMenuBtn" class="md:hidden text-slate-300 hover:text-cyan-400 text-2xl focus:outline-none">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+            </div>
+        </div>
+        <!-- Mobile Dropdown -->
+        <div id="mobileMenu" class="hidden md:hidden bg-cardBg border-b border-slate-800 px-4 pt-2 pb-4 space-y-3">
+            <a href="#packages" class="block text-slate-300 hover:text-cyan-400 py-1">Packages</a>
+            <a href="#bypass" class="block text-slate-300 hover:text-cyan-400 py-1">Speed Bypass</a>
+            <a href="#explainer" class="block text-slate-300 hover:text-cyan-400 py-1">Free Internet Guide</a>
+            <a href="#payment" class="block text-slate-300 hover:text-cyan-400 py-1">Payment Methods</a>
+            <a href="#configs" class="block text-slate-300 hover:text-cyan-400 py-1">Free Configs</a>
+            <a href="https://wa.me/94779063644" target="_blank" class="flex items-center justify-center space-x-2 w-full bg-emerald-600 text-white font-semibold py-2 rounded-xl">
+                <i class="fa-brands fa-whatsapp"></i>
+                <span>WhatsApp Order</span>
+            </a>
+        </div>
+    </header>
+
+    <section class="relative pt-20 pb-28 overflow-hidden">
+        <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute top-1/3 left-1/4 w-[400px] h-[400px] bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+            <div class="inline-flex items-center space-x-2 bg-cyan-950/60 border border-cyan-500/30 px-4 py-1.5 rounded-full text-cyan-300 text-xs sm:text-sm font-semibold mb-6 glow-cyan">
+                <i class="fa-solid fa-shield-halved"></i>
+                <span>SINGAPORE PAID VPN & DATA BYPASS EXPERTS</span>
+            </div>
+
+            <h1 class="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight mb-6 leading-tight">
+                Experience <span class="bg-gradient-to-r from-cyan-400 via-emerald-400 to-teal-300 bg-clip-text text-transparent text-glow">Unlimited High-Speed</span> Internet in Sri Lanka
+            </h1>
+
+            <p class="max-w-3xl mx-auto text-lg sm:text-xl text-slate-300 mb-10 leading-relaxed">
+                Save up to 80% on your monthly data bills. Use low-cost social, Zoom, and YouTube packages with our premium Singapore VPN servers to unlock full internet access with maximum speed!
+            </p>
+
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <a href="#packages" class="w-full sm:w-auto px-8 py-4 rounded-2xl bg-gradient-to-r from-cyan-500 to-emerald-500 text-darkBg font-bold text-lg hover:opacity-90 transition-all glow-cyan flex items-center justify-center space-x-3">
+                    <i class="fa-solid fa-rocket"></i>
+                    <span>Explore Packages</span>
+                </a>
+                <a href="https://wa.me/94779063644?text=Hi,%20I%20want%20to%20join%20Quick%20Net%20VIP%20Services!" target="_blank" class="w-full sm:w-auto px-8 py-4 rounded-2xl bg-cardBg border border-slate-700 hover:border-emerald-500 text-slate-100 font-bold text-lg transition-all flex items-center justify-center space-x-3">
+                    <i class="fa-brands fa-whatsapp text-emerald-400 text-xl"></i>
+                    <span>Contact via WhatsApp</span>
+                </a>
+            </div>
+
+            <!-- Floating statistics bar -->
+            <div class="mt-16 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-5xl mx-auto">
+                <div class="bg-cardBg/60 border border-slate-800/80 p-6 rounded-2xl backdrop-blur-sm floating-anim">
+                    <div class="text-3xl font-extrabold text-cyan-400 mb-1">4K</div>
+                    <div class="text-xs sm:text-sm text-slate-400">YouTube Streaming</div>
+                </div>
+                <div class="bg-cardBg/60 border border-slate-800/80 p-6 rounded-2xl backdrop-blur-sm floating-anim" style="animation-delay: 0.5s;">
+                    <div class="text-3xl font-extrabold text-emerald-400 mb-1">30 Days</div>
+                    <div class="text-xs sm:text-sm text-slate-400">Working & Warranty</div>
+                </div>
+                <div class="bg-cardBg/60 border border-slate-800/80 p-6 rounded-2xl backdrop-blur-sm floating-anim" style="animation-delay: 1s;">
+                    <div class="text-3xl font-extrabold text-cyan-400 mb-1">80%</div>
+                    <div class="text-xs sm:text-sm text-slate-400">Data Cost Saving</div>
+                </div>
+                <div class="bg-cardBg/60 border border-slate-800/80 p-6 rounded-2xl backdrop-blur-sm floating-anim" style="animation-delay: 1.5s;">
+                    <div class="text-3xl font-extrabold text-emerald-400 mb-1">24/7</div>
+                    <div class="text-xs sm:text-sm text-slate-400">Reliable Support</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-20 bg-slate-950/50 border-y border-slate-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <h2 class="text-3xl sm:text-4xl font-bold mb-4">Why Choose <span class="text-cyan-400">QUICK NET</span>?</h2>
+                <p class="text-slate-400">We deliver top-tier speed, stability, and round-the-clock customer support across Sri Lanka.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-cardBg border border-slate-800 hover:border-cyan-500/50 p-8 rounded-3xl transition-all group">
+                    <div class="w-14 h-14 rounded-2xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-gauge-high"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-white">High-Speed Connection</h3>
+                    <p class="text-slate-400 leading-relaxed">Enjoy blazing fast browsing speeds with low latency optimized for gaming, downloading, and streaming.</p>
+                </div>
+
+                <div class="bg-cardBg border border-slate-800 hover:border-emerald-500/50 p-8 rounded-3xl transition-all group">
+                    <div class="w-14 h-14 rounded-2xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-download"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-white">Fast Downloading & Uploading</h3>
+                    <p class="text-slate-400 leading-relaxed">Lightning-fast speeds for all your torrents, heavy file transfers, cloud backups, and social media uploads.</p>
+                </div>
+
+                <div class="bg-cardBg border border-slate-800 hover:border-purple-500/50 p-8 rounded-3xl transition-all group">
+                    <div class="w-14 h-14 rounded-2xl bg-purple-500/10 text-purple-400 flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-shield-check"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-white">30 Days Working & Warranty</h3>
+                    <p class="text-slate-400 leading-relaxed">Full 30-day continuous operation guarantee with instant troubleshooting and reliable server uptime.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="packages" class="py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-12">
+                <div class="inline-block bg-cyan-950 text-cyan-400 px-4 py-1 rounded-full text-xs font-semibold uppercase tracking-wider mb-3">Pricelist 2026</div>
+                <h2 class="text-3xl sm:text-5xl font-extrabold mb-4">Singapore Paid VPN Packages</h2>
+                <p class="text-slate-400">Choose your preferred unlimited package and unlock supreme internet speeds today.</p>
+            </div>
+
+            <!-- Category Tabs -->
+            <div class="flex flex-wrap justify-center gap-3 mb-12">
+                <button onclick="switchTab('singapore')" id="tab-singapore" class="px-6 py-3 rounded-xl font-bold text-sm bg-cyan-500 text-darkBg transition-all shadow-lg">Singapore VPN</button>
+                <button onclick="switchTab('bypass')" id="tab-bypass" class="px-6 py-3 rounded-xl font-bold text-sm bg-cardBg border border-slate-700 text-slate-300 hover:border-cyan-500 transition-all">Speed Bypass (Dialog)</button>
+                <button onclick="switchTab('networks')" id="tab-networks" class="px-6 py-3 rounded-xl font-bold text-sm bg-cardBg border border-slate-700 text-slate-300 hover:border-cyan-500 transition-all">Network Packages</button>
+            </div>
+
+            <!-- Tab Content 1: Singapore VPN -->
+            <div id="content-singapore" class="package-content grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <div class="bg-cardBg border-2 border-cyan-500/40 hover:border-cyan-500 p-8 rounded-3xl relative flex flex-col justify-between transition-all glow-cyan-lg">
+                    <div class="absolute -top-4 right-8 bg-cyan-500 text-darkBg text-xs font-black uppercase px-4 py-1 rounded-full">Most Popular</div>
+                    <div>
+                        <div class="text-cyan-400 font-semibold mb-2">UNLIMITED ROUTER & FIBER</div>
+                        <h3 class="text-2xl font-bold text-white mb-4">Unlimited ALL ROUTER @ FIBER</h3>
+                        <div class="text-4xl font-extrabold text-white mb-6">500 <span class="text-lg text-cyan-400 font-medium">LKR / Mo</span></div>
+                        <ul class="space-y-3 text-slate-300 mb-8">
+                            <li class="flex items-center space-x-3"><i class="fa-solid fa-check text-cyan-400"></i><span>Singapore Dedicated Servers</span></li>
+                            <li class="flex items-center space-x-3"><i class="fa-solid fa-check text-cyan-400"></i><span>Full Uncapped Speeds</span></li>
+                            <li class="flex items-center space-x-3"><i class="fa-solid fa-check text-cyan-400"></i><span>Up to 4K YouTube Streaming</span></li>
+                            <li class="flex items-center space-x-3"><i class="fa-solid fa-check text-cyan-400"></i><span>30 Days Full Working Warranty</span></li>
+                        </ul>
+                    </div>
+                    <button onclick="orderPackage('Unlimited ALL ROUTER @ FIBER', '500 LKR')" class="w-full py-3.5 bg-cyan-500 hover:bg-cyan-400 text-darkBg font-bold rounded-xl transition-all flex items-center justify-center space-x-2">
+                        <i class="fa-brands fa-whatsapp text-lg"></i>
+                        <span>Order via WhatsApp</span>
+                    </button>
+                </div>
+
+                <div class="bg-cardBg border border-slate-800 hover:border-emerald-500 p-8 rounded-3xl relative flex flex-col justify-between transition-all">
+                    <div>
+                        <div class="text-emerald-400 font-semibold mb-2">UNLIMITED MOBILE SIM</div>
+                        <h3 class="text-2xl font-bold text-white mb-4">Unlimited ALL SIM</h3>
+                        <div class="text-4xl font-extrabold text-white mb-6">300 <span class="text-lg text-emerald-400 font-medium">LKR / Mo</span></div>
+                        <ul class="space-y-3 text-slate-300 mb-8">
+                            <li class="flex items-center space-x-3"><i class="fa-solid fa-check text-emerald-400"></i><span>Works on All Mobile Networks</span></li>
+                            <li class="flex items-center space-x-3"><i class="fa-solid fa-check text-emerald-400"></i><span>Fast Downloading & Uploading</span></li>
+                            <li class="flex items-center space-x-3"><i class="fa-solid fa-check text-emerald-400"></i><span>Gaming & Social Support</span></li>
+                            <li class="flex items-center space-x-3"><i class="fa-solid fa-check text-emerald-400"></i><span>30 Days Warranty</span></li>
+                        </ul>
+                    </div>
+                    <button onclick="orderPackage('Unlimited ALL SIM', '300 LKR')" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl transition-all flex items-center justify-center space-x-2">
+                        <i class="fa-brands fa-whatsapp text-lg"></i>
+                        <span>Order via WhatsApp</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tab Content 2: Speed Bypass -->
+            <div id="content-bypass" class="package-content hidden grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <div class="bg-cardBg border border-slate-800 hover:border-cyan-500 p-8 rounded-3xl relative flex flex-col justify-between transition-all">
+                    <div>
+                        <div class="text-cyan-400 font-semibold mb-2">DIALOG ZOOM SIM</div>
+                        <h3 class="text-2xl font-bold text-white mb-4">Speed Bypass Unlimited</h3>
+                        <div class="text-4xl font-extrabold text-white mb-6">500 <span class="text-lg text-cyan-400 font-medium">LKR</span></div>
+                        <ul class="space-y-3 text-slate-300 mb-8">
+                            <li class="flex items-center space-x-3"><i class="fa-solid fa-check text-cyan-400"></i><span>Dialog Zoom SIM Speed Bypass</span></li>
+                            <li class="flex items-center space-x-3"><i class="fa-solid fa-check text-cyan-400"></i><span>Unlimited Full Speed Internet</span></li>
+                            <li class="flex items-center space-x-3"><i class="fa-solid fa-check text-cyan-400"></i><span>Stable Connection & Low Ping</span></li>
+                        </ul>
+                    </div>
+                    <button onclick="orderPackage('Dialog Zoom SIM Speed Bypass Unlimited', '500 LKR')" class="w-full py-3.5 bg-cyan-500 hover:bg-cyan-400 text-darkBg font-bold rounded-xl transition-all flex items-center justify-center space-x-2">
+                        <i class="fa-brands fa-whatsapp text-lg"></i>
+                        <span>Order via WhatsApp</span>
+                    </button>
+                </div>
+
+                <div class="bg-cardBg border border-slate-800 hover:border-cyan-500 p-8 rounded-3xl relative flex flex-col justify-between transition-all">
+                    <div>
+                        <div class="text-cyan-400 font-semibold mb-2">DIALOG ZOOM SIM</div>
+                        <h3 class="text-2xl font-bold text-white mb-4">50 GB Data Package</h3>
+                        <div class="text-4xl font-extrabold text-white mb-6">150 <span class="text-lg text-cyan-400 font-medium">LKR</span></div>
+                        <ul class="space-y-3 text-slate-300 mb-8">
+                            <li class="flex items-center space-x-3"><i class="fa-solid fa-check text-cyan-400"></i><span>50 GB High-Speed Data</span></li>
+                            <li class="flex items-center space-x-3"><i class="fa-solid fa-check text-cyan-400"></i><span>Dialog Zoom SIM</span></li>
+                            <li class="flex items-center space-x-3"><i class="fa-solid fa-check text-cyan-400"></i><span>Instant Activation</span></li>
+                        </ul>
+                    </div>
+                    <button onclick="orderPackage('Dialog Zoom SIM 50GB', '150 LKR')" class="w-full py-3.5 bg-cyan-500 hover:bg-cyan-400 text-darkBg font-bold rounded-xl transition-all flex items-center justify-center space-x-2">
+                        <i class="fa-brands fa-whatsapp text-lg"></i>
+                        <span>Order via WhatsApp</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tab Content 3: Network Specific Packages -->
+            <div id="content-networks" class="package-content hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+                <!-- Airtel -->
+                <div class="bg-cardBg border border-slate-800 p-6 rounded-2xl">
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="text-xl font-bold text-red-400">Airtel Packages</h4>
+                        <i class="fa-solid fa-signal text-red-400 text-xl"></i>
+                    </div>
+                    <ul class="space-y-2 text-sm text-slate-300 mb-6">
+                        <li class="flex justify-between py-1 border-b border-slate-800"><span>YouTube</span><span class="font-bold text-cyan-400">260/-</span></li>
+                        <li class="flex justify-between py-1 border-b border-slate-800"><span>Zoom</span><span class="font-bold text-cyan-400">224/-</span></li>
+                        <li class="flex justify-between py-1 border-b border-slate-800"><span>Social</span><span class="font-bold text-cyan-400">909 / 1108/-</span></li>
+                        <li class="flex justify-between py-1"><span>TikTok</span><span class="font-bold text-cyan-400">297 / 997/-</span></li>
+                    </ul>
+                    <button onclick="orderPackage('Airtel Packages', 'Varies')" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-semibold rounded-xl text-sm transition-all">Select Airtel</button>
+                </div>
+
+                <!-- Dialog -->
+                <div class="bg-cardBg border border-slate-800 p-6 rounded-2xl">
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="text-xl font-bold text-amber-400">Dialog Packages</h4>
+                        <i class="fa-solid fa-tower-cell text-amber-400 text-xl"></i>
+                    </div>
+                    <ul class="space-y-2 text-sm text-slate-300 mb-6">
+                        <li class="flex justify-between py-1 border-b border-slate-800"><span>Zoom SIM @ ROUTER</span><span class="font-bold text-cyan-400">224 - 724/-</span></li>
+                        <li class="flex justify-between py-1 border-b border-slate-800"><span>Social</span><span class="font-bold text-cyan-400">348/-</span></li>
+                        <li class="flex justify-between py-1"><span>TikTok</span><span class="font-bold text-cyan-400">997/-</span></li>
+                    </ul>
+                    <button onclick="orderPackage('Dialog Packages', 'Varies')" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-semibold rounded-xl text-sm transition-all">Select Dialog</button>
+                </div>
+
+                <!-- Hutch -->
+                <div class="bg-cardBg border border-slate-800 p-6 rounded-2xl">
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="text-xl font-bold text-purple-400">Hutch Packages</h4>
+                        <i class="fa-solid fa-wifi text-purple-400 text-xl"></i>
+                    </div>
+                    <ul class="space-y-2 text-sm text-slate-300 mb-6">
+                        <li class="flex justify-between py-1 border-b border-slate-800"><span>Zoom</span><span class="font-bold text-cyan-400">224/-</span></li>
+                        <li class="flex justify-between py-1"><span>Social</span><span class="font-bold text-cyan-400">169/-</span></li>
+                    </ul>
+                    <button onclick="orderPackage('Hutch Packages', 'Varies')" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-semibold rounded-xl text-sm transition-all">Select Hutch</button>
+                </div>
+
+                <!-- Mobitel -->
+                <div class="bg-cardBg border border-slate-800 p-6 rounded-2xl">
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="text-xl font-bold text-blue-400">Mobitel Packages</h4>
+                        <i class="fa-solid fa-mobile-screen text-blue-400 text-xl"></i>
+                    </div>
+                    <ul class="space-y-2 text-sm text-slate-300 mb-6">
+                        <li class="flex justify-between py-1"><span>Zoom (All IP Max Speed)</span><span class="font-bold text-cyan-400">222/-</span></li>
+                    </ul>
+                    <button onclick="orderPackage('Mobitel Packages', '222 LKR')" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-semibold rounded-xl text-sm transition-all">Select Mobitel</button>
+                </div>
+
+                <!-- SLT Fiber -->
+                <div class="bg-cardBg border border-slate-800 p-6 rounded-2xl sm:col-span-2 lg:col-span-2">
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="text-xl font-bold text-emerald-400">SLT Fiber Packages</h4>
+                        <i class="fa-solid fa-network-wired text-emerald-400 text-xl"></i>
+                    </div>
+                    <ul class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm text-slate-300 mb-6">
+                        <li class="bg-slate-900 p-3 rounded-xl border border-slate-800 text-center font-bold text-cyan-400">Meet Max</li>
+                        <li class="bg-slate-900 p-3 rounded-xl border border-slate-800 text-center font-bold text-cyan-400">Meet Max Lite</li>
+                        <li class="bg-slate-900 p-3 rounded-xl border border-slate-800 text-center font-bold text-cyan-400">Netflix</li>
+                    </ul>
+                    <button onclick="orderPackage('SLT Fiber Packages', 'Varies')" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-semibold rounded-xl text-sm transition-all">Select SLT Fiber</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="explainer" class="py-20 bg-slate-950/60 border-y border-slate-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div>
+                    <div class="inline-block bg-emerald-950 text-emerald-400 px-4 py-1 rounded-full text-xs font-semibold uppercase tracking-wider mb-3">Guide & FAQ</div>
+                    <h2 class="text-3xl sm:text-4xl font-extrabold mb-6">මොකක්ද මේ VPN FREE INTERNET කියන්නේ?</h2>
+                    <p class="text-slate-300 mb-4 leading-relaxed">
+                        ඔයා හැමදාම Data වලට ලොකු ගාණක් වියදම් කරනවා නේද? එහෙනම් මේක හොඳට කියවන්න. සරලවම කිව්වොත්, ඔයාගේ Sim එකට ඔයා දාගන්න Zoom, TikTok, YouTube වගේ ලාභ පැකේජ් එකක් (Social Media Package) භාවිතා කරලා, අපේ VPN App එක හරහා ඒ Data වලින් මුළු ඉන්ටර්නෙට් එකටම (Google, Playstore, Netflix, Games) යන්න පුළුවන් ක්‍රමයට තමයි මේ "Free Internet" කියලා කියන්නේ.
+                    </p>
+                    <div class="space-y-4 mb-8">
+                        <div class="flex items-start space-x-3">
+                            <div class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center mt-1"><i class="fa-solid fa-check text-xs"></i></div>
+                            <div><strong class="text-white">80% කින් පිරිවැය අඩු වීම:</strong> Data වලට යන වියදම විශාල ලෙස ඉතිරි වේ.</div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <div class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center mt-1"><i class="fa-solid fa-check text-xs"></i></div>
+                            <div><strong class="text-white">විශේෂ පැකේජ් නිදහස:</strong> Zoom හෝ TikTok පැකේජ් එකකින් කැමති ඕනෑම වෙබ් අඩවියකට පිවිසිය හැක.</div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <div class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center mt-1"><i class="fa-solid fa-check text-xs"></i></div>
+                            <div><strong class="text-white">සුපිරි වේගය:</strong> කිසිදු බාධාවකින් තොරව High Speed අත්දැකීමක්.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-cardBg border border-slate-800 p-8 rounded-3xl relative">
+                    <h3 class="text-2xl font-bold mb-6 text-cyan-400 flex items-center space-x-3">
+                        <i class="fa-solid fa-list-check"></i>
+                        <span>ඔයා කරන්න ඕන පළවෙනි පියවර</span>
+                    </h3>
+                    <ol class="space-y-6 text-slate-300">
+                        <li class="flex space-x-4">
+                            <div class="w-8 h-8 rounded-full bg-cyan-500 text-darkBg font-bold flex items-center justify-center shrink-0">1</div>
+                            <div>
+                                <h4 class="font-bold text-white mb-1">Activate Packages</h4>
+                                <p class="text-sm text-slate-400">පහළ තියෙන ලිස්ට් එකෙන් හෝ අපගේ සම්බන්ධතාවය හරහා ඔයාගේ Sim එකට ගැලපෙන ලාබම පැකේජ් එකක් මුලින්ම Active කරගන්න.</p>
+                            </div>
+                        </li>
+                        <li class="flex space-x-4">
+                            <div class="w-8 h-8 rounded-full bg-cyan-500 text-darkBg font-bold flex items-center justify-center shrink-0">2</div>
+                            <div>
+                                <h4 class="font-bold text-white mb-1">Get VPN App & Config</h4>
+                                <p class="text-sm text-slate-400">අපෙන් VPN App එක සහ Singapore Server Config ලබාගන්න WhatsApp හරහා කතා කරන්න.</p>
+                            </div>
+                        </li>
+                        <li class="flex space-x-4">
+                            <div class="w-8 h-8 rounded-full bg-cyan-500 text-darkBg font-bold flex items-center justify-center shrink-0">3</div>
+                            <div>
+                                <h4 class="font-bold text-white mb-1">Enjoy Unlimited Internet</h4>
+                                <p class="text-sm text-slate-400">Connect දීලා සුපිරි වේගයෙන් ඉන්ටර්නෙට් යන්න පටන් ගන්න!</p>
+                            </div>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="payment" class="py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <div class="inline-block bg-cyan-950 text-cyan-400 px-4 py-1 rounded-full text-xs font-semibold uppercase tracking-wider mb-3">Secure Transactions</div>
+                <h2 class="text-3xl sm:text-5xl font-extrabold mb-4">PAYMENT METHODS 🏧</h2>
+                <p class="text-slate-400">Make your payment securely using bank transfer or EZ Cash and send the receipt instantly.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto mb-12">
+                <!-- Bank Transfer -->
+                <div class="bg-cardBg border border-slate-800 p-8 rounded-3xl relative">
+                    <div class="w-12 h-12 rounded-2xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center text-xl mb-6">
+                        <i class="fa-solid fa-building-columns"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4 text-white">BANK TRANSFER</h3>
+                    <div class="space-y-3 text-slate-300 mb-6 bg-slate-900/60 p-5 rounded-2xl border border-slate-800">
+                        <p><strong class="text-cyan-400">BANK:</strong> PEOPLE'S BANK</p>
+                        <p><strong class="text-cyan-400">Acc No:</strong> <span id="accNumber" class="font-mono text-lg font-bold">073 2 001 5 0054744</span></p>
+                        <p><strong class="text-cyan-400">Name:</strong> SEWWANDI MADUSHIKA</p>
+                    </div>
+                    <button onclick="copyToClipboard('073200150054744')" class="w-full py-3 bg-slate-800 hover:bg-slate-700 text-white font-semibold rounded-xl transition-all flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-copy"></i>
+                        <span>Copy Account Number</span>
+                    </button>
+                </div>
+
+                <!-- EZ Cash -->
+                <div class="bg-cardBg border border-slate-800 p-8 rounded-3xl relative">
+                    <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xl mb-6">
+                        <i class="fa-solid fa-wallet"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4 text-white">EZ CASH 💲</h3>
+                    <div class="space-y-3 text-slate-300 mb-6 bg-slate-900/60 p-5 rounded-2xl border border-slate-800">
+                        <p><strong class="text-emerald-400">Mobile No:</strong> <span id="ezNumber" class="font-mono text-lg font-bold">0779063644</span></p>
+                        <p class="text-sm text-amber-400 font-medium">⚠️ Ez cash deposit කරනවානම් රැ.20 වැඩිපුර දාන්න 🪪</p>
+                    </div>
+                    <button onclick="copyToClipboard('0779063644')" class="w-full py-3 bg-slate-800 hover:bg-slate-700 text-white font-semibold rounded-xl transition-all flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-copy"></i>
+                        <span>Copy EZ Cash Number</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Rules Box -->
+            <div class="max-w-4xl mx-auto bg-amber-950/20 border border-amber-500/30 p-8 rounded-3xl">
+                <h4 class="text-xl font-bold text-amber-400 mb-4 flex items-center space-x-3">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <span>Important Payment Instructions</span>
+                </h4>
+                <ul class="space-y-3 text-slate-300 text-sm">
+                    <li class="flex items-start space-x-3">
+                        <i class="fa-solid fa-circle-check text-amber-400 mt-1"></i>
+                        <span>Online Transfer කරන විට ලැබෙන සෑම රිසිට්පතක්ම විනාඩි 15 ක් ඇතුලත එවිය යුතුයි.</span>
+                    </li>
+                    <li class="flex items-start space-x-3">
+                        <i class="fa-solid fa-circle-check text-amber-400 mt-1"></i>
+                        <span>Remark / Description / Reference යටතේ ඔබගේ නම අනිවාර්යයෙන් සඳහන් කල යුතුයි.</span>
+                    </li>
+                    <li class="flex items-start space-x-3">
+                        <i class="fa-solid fa-circle-check text-amber-400 mt-1"></i>
+                        <span>ATM, CDM හෝ බැංකු මගින් මුදල් දැමීමේදී ලැබෙන රිසිට්පත පැයක් ඇතුලත එවිය යුතුයි.</span>
+                    </li>
+                    <li class="flex items-start space-x-3">
+                        <i class="fa-solid fa-circle-check text-amber-400 mt-1"></i>
+                        <span>උපරිම විශ්වාසවන්ත සේවාව සහ පැය 24 ම ඔබට සේවය.</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section id="configs" class="py-20 bg-slate-950/60 border-y border-slate-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center max-w-3xl">
+            <div class="inline-block bg-cyan-950 text-cyan-400 px-4 py-1 rounded-full text-xs font-semibold uppercase tracking-wider mb-3">Free Benefits</div>
+            <h2 class="text-3xl sm:text-4xl font-extrabold mb-4">FREE VPN CONFIG AVAILABLE 🎁</h2>
+            <p class="text-slate-300 mb-8">අපෙන් Free VPN Config ලබාගන්න පුළුවන්. Stable connection සහ Singapore servers සමඟ පහසුකම් සපයනු ලැබේ.</p>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10 text-left">
+                <div class="bg-cardBg border border-slate-800 p-6 rounded-2xl">
+                    <i class="fa-solid fa-bolt text-cyan-400 text-2xl mb-3"></i>
+                    <h4 class="font-bold text-white mb-1">Stable & Smooth</h4>
+                    <p class="text-xs text-slate-400">Uninterrupted browsing experience.</p>
+                </div>
+                <div class="bg-cardBg border border-slate-800 p-6 rounded-2xl">
+                    <i class="fa-solid fa-server text-emerald-400 text-2xl mb-3"></i>
+                    <h4 class="font-bold text-white mb-1">Singapore Servers</h4>
+                    <p class="text-xs text-slate-400">High speed low ping servers.</p>
+                </div>
+                <div class="bg-cardBg border border-slate-800 p-6 rounded-2xl">
+                    <i class="fa-solid fa-gamepad text-purple-400 text-2xl mb-3"></i>
+                    <h4 class="font-bold text-white mb-1">Gaming Support</h4>
+                    <p class="text-xs text-slate-400">Optimized for online mobile games.</p>
+                </div>
+            </div>
+
+            <div class="bg-cardBg border border-slate-800 p-8 rounded-3xl">
+                <p class="text-sm text-slate-300 mb-6">📢 නව Free Config, Updates සහ Offers ලබාගැනීමට අපගේ WhatsApp Chat Group සහ Channel සමඟ Join වෙලා ඉන්න.</p>
+                <div class="flex flex-wrap justify-center gap-4">
+                    <a href="https://chat.whatsapp.com/BhNrm7oEXzXAZvhzdLEGCR" target="_blank" class="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl transition-all flex items-center space-x-2">
+                        <i class="fa-brands fa-whatsapp text-lg"></i>
+                        <span>Join WhatsApp Group</span>
+                    </a>
+                    <a href="https://whatsapp.com/channel/0029VbBtIUzJZg3zEpXiCU3Z" target="_blank" class="px-6 py-3 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-xl transition-all flex items-center space-x-2">
+                        <i class="fa-brands fa-whatsapp text-lg"></i>
+                        <span>Join WhatsApp Channel</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-darkBg border-t border-slate-900 py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
+                <div>
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500 to-emerald-400 flex items-center justify-center">
+                            <i class="fa-solid fa-bolt text-darkBg font-bold"></i>
+                        </div>
+                        <span class="text-xl font-black tracking-wider text-white">QUICK NET</span>
+                    </div>
+                    <p class="text-slate-400 text-sm leading-relaxed mb-4">
+                        Your trusted partner for high-speed Singapore Paid VPN and Data Bypass services in Sri Lanka. 24/7 Support and 100% Reliability.
+                    </p>
+                </div>
+
+                <div>
+                    <h4 class="text-lg font-bold text-white mb-4">Quick Links</h4>
+                    <ul class="space-y-2 text-sm text-slate-400">
+                        <li><a href="#packages" class="hover:text-cyan-400 transition-colors">Packages & Pricelist</a></li>
+                        <li><a href="#bypass" class="hover:text-cyan-400 transition-colors">Speed Bypass</a></li>
+                        <li><a href="#explainer" class="hover:text-cyan-400 transition-colors">What is Free Internet</a></li>
+                        <li><a href="#payment" class="hover:text-cyan-400 transition-colors">Payment Methods</a></li>
+                        <li><a href="#configs" class="hover:text-cyan-400 transition-colors">Free Configs</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-lg font-bold text-white mb-4">Direct Contact & Support</h4>
+                    <div class="space-y-3 text-sm text-slate-300">
+                        <p class="font-medium text-cyan-400">Contact: @Sevrs buy Chami</p>
+                        <p class="flex items-center space-x-2">
+                            <i class="fa-solid fa-phone text-emerald-400"></i>
+                            <a href="tel:0725695312" class="hover:underline font-mono">0725695312</a>
+                        </p>
+                        <p class="flex items-center space-x-2">
+                            <i class="fa-solid fa-phone text-emerald-400"></i>
+                            <a href="tel:0779063644" class="hover:underline font-mono">0779063644</a>
+                        </p>
+                        <div class="pt-2">
+                            <a href="https://wa.me/94779063644" target="_blank" class="inline-flex items-center space-x-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2.5 rounded-xl transition-all">
+                                <i class="fa-brands fa-whatsapp text-lg"></i>
+                                <span>Chat with Chami</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-t border-slate-900 pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500">
+                <p>&copy; 2026 QUICK NET. All rights reserved. Designed for Sri Lanka Users.</p>
+                <p class="mt-2 sm:mt-0">Singapore Paid VPN & Data Bypass Services</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast Notification Box -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-32 opacity-0 transition-all duration-300 bg-cardBg border border-cyan-500 text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center space-x-3">
+        <i class="fa-solid fa-circle-check text-cyan-400 text-xl"></i>
+        <div>
+            <h5 class="font-bold text-sm" id="toastTitle">Success</h5>
+            <p class="text-xs text-slate-400" id="toastMsg">Copied to clipboard!</p>
+        </div>
+    </div>
+
+    <script>
+        // Startup Loading Animation simulation
+        window.addEventListener('DOMContentLoaded', () => {
+            const loaderScreen = document.getElementById('loader-screen');
+            const loaderBar = document.getElementById('loader-bar');
+            const loaderPercent = document.getElementById('loader-percent');
+            
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.floor(Math.random() * 15) + 5;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        loaderScreen.style.opacity = '0';
+                        loaderScreen.style.visibility = 'hidden';
+                    }, 400);
+                }
+                loaderBar.style.width = progress + '%';
+                loaderPercent.innerText = progress + '%';
+            }, 80);
+        });
+
+        // Custom Cursor movement
+        const cursor = document.getElementById('cursor');
+        const cursorDot = document.getElementById('cursorDot');
+        let mouseX = 0, mouseY = 0;
+        let cursorX = 0, cursorY = 0;
+
+        window.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            cursorDot.style.left = `${mouseX}px`;
+            cursorDot.style.top = `${mouseY}px`;
+        });
+
+        function renderCursor() {
+            cursorX += (mouseX - cursorX) * 0.2;
+            cursorY += (mouseY - cursorY) * 0.2;
+            cursor.style.left = `${cursorX}px`;
+            cursor.style.top = `${cursorY}px`;
+            requestAnimationFrame(renderCursor);
+        }
+        requestAnimationFrame(renderCursor);
+
+        // Mobile menu toggle
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Tab switcher for packages
+        function switchTab(tabName) {
+            const tabs = ['singapore', 'bypass', 'networks'];
+            tabs.forEach(t => {
+                const btn = document.getElementById(`tab-${t}`);
+                const content = document.getElementById(`content-${t}`);
+                if (t === tabName) {
+                    btn.className = "px-6 py-3 rounded-xl font-bold text-sm bg-cyan-500 text-darkBg transition-all shadow-lg";
+                    content.classList.remove('hidden');
+                } else {
+                    btn.className = "px-6 py-3 rounded-xl font-bold text-sm bg-cardBg border border-slate-700 text-slate-300 hover:border-cyan-500 transition-all";
+                    content.classList.add('hidden');
+                }
+            });
+        }
+
+        // Order package via WhatsApp
+        function orderPackage(packageName, price) {
+            const message = `Hi Quick Net, I want to purchase the package: *${packageName}* (${price}). Please send me payment details and connection steps!`;
+            const encoded = encodeURIComponent(message);
+            window.open(`https://wa.me/94779063644?text=${encoded}`, '_blank');
+        }
+
+        // Copy to clipboard helper
+        function copyToClipboard(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                showToast("Copied!", `Successfully copied ${text} to clipboard.`);
+            } catch (err) {
+                showToast("Error", "Failed to copy text.", true);
+            }
+            document.body.removeChild(textarea);
+        }
+
+        // Toast notification
+        function showToast(title, message, isError = false) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastTitle').innerText = title;
+            document.getElementById('toastMsg').innerText = message;
+            toast.classList.remove('translate-y-32', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-32', 'opacity-0');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
